@@ -7,7 +7,13 @@ public class SomeGameobject : MonoBehaviour
     TestClass test;
     void Start()
     {
-        test = new TestClass(10);
+        // this USES a constructor
+        // test = new TestClass(10);
+
+        test = new TestClass();
+        test.foo = 10;
+
+        //Vector2 a = new Vector2();
     }
 
 }

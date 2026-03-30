@@ -6,6 +6,16 @@ using UnityEngine.InputSystem.XR;
 
 public class Character : MonoBehaviour
 {
+    /// <summary>
+    ///  blah balsdhlaks da
+    ///  s;lfnadk;
+    ///  fnakd;nf
+    ///  adknfa
+    ///  dk;nfa
+    ///  d;nf
+    /// </summary>
+
+
     public float moveSpeed = 5.0f;
     public float gravity = -9.81f;
     public float throwForce = 1.0f;

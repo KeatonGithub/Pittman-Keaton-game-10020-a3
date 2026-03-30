@@ -68,6 +68,7 @@ public class SimpleStateMachine : MonoBehaviour
                 break;
         }
 
+        /*
         // regardless of state, NPC always looks in the direction they are moving
         if (agent.velocity.magnitude > 0.1f)
         {
@@ -75,6 +76,7 @@ public class SimpleStateMachine : MonoBehaviour
             Quaternion lookDirection = Quaternion.LookRotation(direction);
             transform.rotation = Quaternion.Slerp(transform.rotation, lookDirection, Time.deltaTime * rotationSpeed);
         }
+        */
 
         // show state on screen
         stateText.text = $"State: {state}";

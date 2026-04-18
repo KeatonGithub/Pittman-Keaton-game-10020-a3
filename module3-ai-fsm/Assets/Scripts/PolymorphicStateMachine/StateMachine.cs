@@ -1,4 +1,4 @@
-using System.Collections;
+    using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEditor;
@@ -10,31 +10,36 @@ public class StateMachine : MonoBehaviour
 {
     [Header("Scene References")]
     public Transform character;
-    public Transform[] patrolWaypoints;
+    public Transform[] wanderingWaypoints;
     public TextMeshProUGUI stateText;
 
     [Header("Config")]
-    public float idleTimeThreshold = 2.0f;
+    public float idleTimeThreshold = 2.0f; 
     public float waypointThreshold = 0.6f;
     public float rotationSpeed = 1f;
     public float searchTimeThreshold = 5.0f;
     public float playerDistThreshold = 2.0f;
     public float normalSpeed = 3.5f;
-    public float chaseSpeed = 5.0f;
+    public float fleeSpeed = 5.0f;
 
     [Header("Vision Settings")]
     public float viewRadius = 10f;
     [Range(0, 360)]
     public float viewAngle = 60f;
 
-    [HideInInspector]
-    public NavMeshAgent agent;
-    
-    [HideInInspector]
-    public int patrolIndex = 0;
+    [Header("Collection Settings")]
+    public int chickensCollected = 0;
+    public int totalChickensRequired = 3;
+    public TextMeshProUGUI chickenCounterText; // UI text for chicken counter
 
     [HideInInspector]
-    public float idleTime;
+    public NavMeshAgent chicken;
+    
+    [HideInInspector]
+    public int wanderingIndex = 0;
+
+    [HideInInspector]
+    public float grazingTime;
 
     [HideInInspector]
     public float searchTime;
@@ -44,12 +49,35 @@ public class StateMachine : MonoBehaviour
     
     private State currentState;
 
+    void Start()
+    {
+        UpdateChickenUI();
+    }
+
+    public void AddChicken()
+    {
+        chickensCollected++;// Adds 1 to chicken collected counter
+        UpdateChickenUI();
+
+        if (chickensCollected >= totalChickensRequired)// If at 3 collected Chickens transfer the scene to the win screen
+        {
+            SceneManager.LoadScene("WIN_SCENE");
+        }
+    }
+
+    private void UpdateChickenUI()
+    {
+        if (chickenCounterText != null)
+        {
+            chickenCounterText.text = $"Chickens: {chickensCollected} / {totalChickensRequired}";
+        }
+    }
     private void Awake()
     {
-        agent = GetComponent<NavMeshAgent>();
+        chicken = GetComponent<NavMeshAgent>();
 
         // start in the Patrol state
-        currentState = new PatrolState(this);
+        currentState = new WanderingState(this);
     }
 
     // --- STATE MACHINE ---
@@ -77,7 +105,7 @@ public class StateMachine : MonoBehaviour
         // if NPC ever gets close to player, end 
         Vector3 toPlayer = character.position - transform.position;
         float distToPlayer = toPlayer.magnitude;
-        if (distToPlayer < playerDistThreshold && canSeePlayer) SceneManager.LoadScene("END");
+       // if (distToPlayer < playerDistThreshold && canSeePlayer) SceneManager.LoadScene("END");
     }
 
     // --- HELPER FUNCTIONS ---
@@ -108,13 +136,13 @@ public class StateMachine : MonoBehaviour
     {
         // draw the waypoints
         Gizmos.color = Color.red;
-        foreach (Transform patrolTransform in patrolWaypoints)
+        foreach (Transform wanderingTransform in wanderingWaypoints)
         {
-            Gizmos.DrawWireSphere(patrolTransform.position, 0.5f);
+            Gizmos.DrawWireSphere(wanderingTransform.position, 0.5f);
         }
 
         // draw the view cone (2D version)
-        if (!(currentState is IdleState))
+        if (!(currentState is GrazingState))
         {
             Handles.color = new Color(0f, 1f, 1f, 0.25f);
             if (canSeePlayer) Handles.color = new Color(1f, 0f, 0f, 0.25f);

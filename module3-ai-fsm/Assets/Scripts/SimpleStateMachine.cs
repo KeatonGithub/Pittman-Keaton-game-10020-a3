@@ -10,7 +10,7 @@ using UnityEngine.SceneManagement;
 
 public class SimpleStateMachine : MonoBehaviour
 {
-    enum State { Idle, Patrol, Chase, Search }
+    enum State { Idle, Patrol, Flee, Search }
 
     [Header("Scene References")]
     public Transform character;
@@ -24,7 +24,7 @@ public class SimpleStateMachine : MonoBehaviour
     public float searchTimeThreshold = 5.0f;
     public float playerDistThreshold = 2.0f;
     public float normalSpeed = 3.5f;
-    public float chaseSpeed = 5.0f;
+    public float fleeSpeed = 5.0f;
 
     [Header("Vision Settings")]
     public float viewRadius = 10f;
@@ -60,8 +60,8 @@ public class SimpleStateMachine : MonoBehaviour
             case State.Patrol:
                 Patrol();
                 break;
-            case State.Chase:
-                Chase();
+            case State.Flee:
+                Flee();
                 break;
             case State.Search:
                 Search();
@@ -70,9 +70,9 @@ public class SimpleStateMachine : MonoBehaviour
 
         /*
         // regardless of state, NPC always looks in the direction they are moving
-        if (agent.velocity.magnitude > 0.1f)
+        if (chicken.velocity.magnitude > 0.1f)
         {
-            Vector3 direction = agent.velocity.normalized;
+            Vector3 direction = chicken.velocity.normalized;
             Quaternion lookDirection = Quaternion.LookRotation(direction);
             transform.rotation = Quaternion.Slerp(transform.rotation, lookDirection, Time.deltaTime * rotationSpeed);
         }
@@ -128,13 +128,13 @@ public class SimpleStateMachine : MonoBehaviour
         if (canSeePlayer)
         {
             Debug.Log(state);
-            state = State.Chase;
+            state = State.Flee;
         }
     }
 
-    void Chase()
+    void Flee()
     {
-        agent.speed = chaseSpeed;
+        agent.speed = fleeSpeed;
         agent.SetDestination(character.position);
 
         canSeePlayer = IsInViewCone();
@@ -148,7 +148,7 @@ public class SimpleStateMachine : MonoBehaviour
 
     void Search()
     {
-        agent.speed = chaseSpeed;
+        agent.speed = fleeSpeed;
 
         float searchTimeElapsed = Time.time - searchTime;
 
@@ -157,7 +157,7 @@ public class SimpleStateMachine : MonoBehaviour
 
         if (canSeePlayer)
         {
-            state = State.Chase;
+            state = State.Flee;
             Debug.Log(state);
         }
 

@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PatrolState : State
+public class WanderingState : State
 {
-    public PatrolState(StateMachine _stateMachine) : base(_stateMachine) { }
+    public WanderingState(StateMachine _stateMachine) : base(_stateMachine) { }
 
     public override void Enter()
     {
@@ -12,10 +12,10 @@ public class PatrolState : State
 
     public override void Execute()
     {
-        stateMachine.agent.speed = stateMachine.normalSpeed;
+        stateMachine.chicken.speed = stateMachine.normalSpeed;
 
-        Transform patrolTransform = stateMachine.patrolWaypoints[stateMachine.patrolIndex];
-        stateMachine.agent.SetDestination(patrolTransform.position);
+        Transform patrolTransform = stateMachine.wanderingWaypoints[stateMachine.wanderingIndex];
+        stateMachine.chicken.SetDestination(patrolTransform.position);
 
         Vector3 positionXZ = stateMachine.transform.position;
         positionXZ.y = 0.0f;
@@ -26,21 +26,21 @@ public class PatrolState : State
         float distance = Vector2.Distance(positionXZ, patrolPositionXZ);
         if (distance < stateMachine.waypointThreshold)
         {
-            stateMachine.ChangeState(new IdleState(stateMachine));
+            stateMachine.ChangeState(new GrazingState(stateMachine));
         }
 
         stateMachine.canSeePlayer = stateMachine.IsInViewCone();
         if (stateMachine.canSeePlayer)
         {
-            stateMachine.ChangeState(new ChaseState(stateMachine));
+            stateMachine.ChangeState(new FleeState(stateMachine));
         }
     }
 
     public override void Exit()
     {
-        stateMachine.patrolIndex++;
-        if (stateMachine.patrolIndex >= stateMachine.patrolWaypoints.Length)
-            stateMachine.patrolIndex = 0;
+        stateMachine.wanderingIndex++;
+        if (stateMachine.wanderingIndex >= stateMachine.wanderingWaypoints.Length)
+            stateMachine.wanderingIndex = 0;
     }
 
 }
